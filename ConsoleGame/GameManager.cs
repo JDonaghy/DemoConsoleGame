@@ -12,10 +12,15 @@ namespace ConsoleGame
         private ObjectDisplay[,] charMap;
         private bool _proccessing = false;
         private Random _rand = new Random();
-        private int _score = 0;
+        private int _score;
+        private int _livesLeft;
         
         private static ObjectDisplay _blankChar = new ObjectDisplay
-            { BackgroundColor = ConsoleColor.DarkBlue, ForegroundColor = ConsoleColor.Cyan, CharMap = new char[,] { { ' ' } } };
+        {
+            BackgroundColor = ConsoleColor.DarkBlue,
+            ForegroundColor = ConsoleColor.Cyan,
+            CharMap = new char[,] { { ' ' } }
+        };
 
 
         public bool GameOver { get; set; }
@@ -41,7 +46,7 @@ namespace ConsoleGame
             GameOver = false;
             _initColors();
             Console.Clear();
-            _writeScore();
+            _writeStatus();
         }
 
         public void AddObject(string type, int x, int y)
@@ -94,6 +99,7 @@ namespace ConsoleGame
             }
             catch (Exception e)
             {
+                // Likely out of bounds. Ignore.
             }
         }
 
@@ -128,6 +134,7 @@ namespace ConsoleGame
             _score = 0;
             AddRandomObject();
             objList.Add(new CursorObject(this));
+            _livesLeft = 2;
         }
 
         public void ProcessObjects(ulong counter)
@@ -138,20 +145,35 @@ namespace ConsoleGame
             }
             if (!GameOver)
             {
-                _proccessing = true;
-                foreach (var obj in objList.Where(x => x.IsDead))
+                if (!objList.Any(x => x.GetType().ToString() == "ConsoleGame.CursorObject"))
                 {
-                    if (obj.Points != 0)
+                    if (_livesLeft > 0)
                     {
-                        _score += obj.Points;
-                        _writeScore();
+                        _livesLeft--;
+                        objList.Add(new CursorObject(this));
                     }
-                    obj.Dispose();
+                    else
+                    {
+                        EndGame();
+                    }
                 }
-                objList.RemoveAll(x => x.IsDead);
-                objList.AddRange(_newObjects);
-                _newObjects.Clear();
-                _proccessing = false;
+                else
+                {
+                    _proccessing = true;
+                    foreach (var obj in objList.Where(x => x.IsDead))
+                    {
+                        if (obj.Points != 0)
+                        {
+                            _score += obj.Points;
+                        }
+                        obj.Dispose();
+                    }
+                    objList.RemoveAll(x => x.IsDead);
+                    objList.AddRange(_newObjects);
+                    _newObjects.Clear();
+                    _proccessing = false;
+                }
+                _writeStatus();
             }
             else
             {
@@ -171,11 +193,10 @@ namespace ConsoleGame
         {
             _clearItems();
             Console.Clear();
-            _writeScore();
+            _writeStatus();
             AddObject("GameOverObject", NumColumns / 2 - 8, 5);
             GameOver = true;
         }
-
 
         public void WriteText(int x, int y, string text)
         {
@@ -186,11 +207,14 @@ namespace ConsoleGame
             _initColors();
         }
 
-        private void _writeScore()
+        private void _writeStatus()
         {
-            WriteText(NumColumns - 7, 1, _score.ToString("D5"));
+            WriteText(NumColumns - 10, 1, $"{_score.ToString("D5")}     ");
+            for (int i=0;i<_livesLeft;i++)
+            {
+                WriteText(NumColumns - 1 -i, 1, "^");
+            }
         }
-
         
         private void _clearItems()
         {

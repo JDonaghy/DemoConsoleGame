@@ -22,9 +22,6 @@ namespace ConsoleGame
 
         public override void Update()
         {
-            CheckAlive();
-            if (isDead)
-                return;
             if ((_x > 0 && CurrentX + _x > GameManager.NumColumns) ||
                 (_x < 0 && CurrentX + _x < 0))
             {

@@ -64,7 +64,7 @@ namespace ConsoleGame
             if (ticksSinceLastFire >= 0)
             {
                 ticksSinceLastFire++;
-                if (ticksSinceLastFire > 5)
+                if (ticksSinceLastFire > 3)
                 {
                     ticksSinceLastFire = -1;
                     ObjectDisplay.CharMap[0, 1] = '^';

@@ -20,12 +20,6 @@ namespace ConsoleGame
 
         public override void Update()
         {
-            CheckAlive();
-            if (isDead)
-            {
-                return;
-            }
-
             _updateColumnIndex();
             var x = CurrentX * (Math.PI * 2 / GameManager.NumColumns);
             var y = (Math.Sin(x) * -1 * GameManager.NumRows / 2) + GameManager.NumRows / 2;

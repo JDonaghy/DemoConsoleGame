@@ -78,7 +78,8 @@ namespace ConsoleGame
 
         public virtual void Process(ulong counter)
         {
-            if (counter % SlowFactor == 0)
+            CheckAlive();
+            if (!isDead && counter % SlowFactor == 0)
             {
                 Erase();
                 Update();
@@ -95,6 +96,7 @@ namespace ConsoleGame
                 if (otherObjAtMyPosition.CanDestroy.Contains(myType))
                 {
                     isDead = true;
+                    Erase();
                     GameManager.Beep(300);
                     otherObjAtMyPosition.IsDead = true;
                 }

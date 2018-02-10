@@ -5,6 +5,7 @@ namespace ConsoleGame.GameObjects
 {
     public interface IBaseObject:  IDisposable
     {
+        ObjectDisplay ObjectDisplay { get; set; }
         List<string> CanDestroy { get; }
         bool CanBeDestroyed { get; }
         int Points { get; }

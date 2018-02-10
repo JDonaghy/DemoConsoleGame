@@ -11,12 +11,10 @@ namespace ConsoleGame
         public MissileObject(GameManager gameManager, int x, int y)
             : base(gameManager, x, y)
         {
-            ObjectDisplay = new ObjectDisplay
-            {
-                BackgroundColor = ConsoleColor.DarkBlue,
-                ForegroundColor = ConsoleColor.Yellow,
-                CharMap = new char[,] { { '|' } }
-            };
+            var images = new List<char[,]> { new char[,] { { '|' } } };
+            ObjectDisplay = new ObjectDisplay(images,
+                ConsoleColor.Yellow, ConsoleColor.DarkBlue,
+                gameManager.GameForeground, GameManager.GameBackground);
             Draw();
             SlowFactor = 2;
         }

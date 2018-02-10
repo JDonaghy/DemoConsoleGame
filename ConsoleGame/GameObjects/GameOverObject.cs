@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ConsoleGame.GameObjects
 {
-    public class GameOverObject : BaseObject
+    public class GameOverObject : SimpleObject
     {
         private int inc = 1;
         private const string _gameOver = "G A M E    O V E R";
@@ -11,27 +12,13 @@ namespace ConsoleGame.GameObjects
             : base(gameManager, x, y)
         {
             RegisteredKeys.Add(ConsoleKey.Spacebar);
-            ObjectDisplay = new ObjectDisplay
-            {
-                BackgroundColor = ConsoleColor.DarkBlue,
-                ForegroundColor = ConsoleColor.Yellow,
-                CharMap = new char[,] { { 'G', ' ', 'A', ' ', 'M', ' ', 'E', ' ', ' ', ' ', 'O', ' ', 'V', ' ', 'E', ' ', 'R' } }
-            };
+            var images = new List<char[,]> { new char[,] { { 'G', ' ', 'A', ' ', 'M', ' ', 'E', ' ', ' ', ' ', 'O', ' ', 'V', ' ', 'E', ' ', 'R' } } };
+            ObjectDisplay = new ObjectDisplay(images,
+                ConsoleColor.Yellow, ConsoleColor.DarkBlue,
+                gameManager.GameForeground, GameManager.GameBackground);
             Draw();
-        }
-
-        public override void Update()
-        {
-            
-            CurrentY += inc;
-            if (CurrentY > GameManager.NumRows - 5)
-            {
-                inc = -1;
-            }
-            else if (CurrentY < 5)
-            {
-                inc = 1;
-            }
+            beepFreq = 0;
+            Draw();
         }
 
         public override void ProcessKey(ConsoleKeyInfo keyInfo)

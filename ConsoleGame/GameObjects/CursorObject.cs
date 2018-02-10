@@ -23,12 +23,10 @@ namespace ConsoleGame
             }
             CanDestroyList.Clear();
 
-            ObjectDisplay = new ObjectDisplay
-            {
-                BackgroundColor = ConsoleColor.DarkBlue,
-                ForegroundColor = ConsoleColor.Yellow,
-                CharMap = new char[,] { { '_', '^', '_' } }
-            };
+            var images = new List<char[,]> { new char[,] { { '_', '^', '_' } } };
+            ObjectDisplay = new ObjectDisplay(images,
+                ConsoleColor.Yellow, ConsoleColor.DarkBlue,
+                gameManager.GameForeground, GameManager.GameBackground);
             Draw();
         }
 
@@ -37,7 +35,6 @@ namespace ConsoleGame
             CheckAlive();
             if (isDead)
             {
-                GameManager.EndGame();
                 return;
             }
             
@@ -54,7 +51,7 @@ namespace ConsoleGame
             else if (_shootKeys.Contains(keyInfo.Key) && ticksSinceLastFire == -1)
             {
                 GameManager.AddObject("MissileObject", CurrentX, CurrentY - 1);
-                ObjectDisplay.CharMap[0, 1] = '_';
+                ObjectDisplay.CharMaps[0][0, 1] = '_';
                 ticksSinceLastFire = 0;
             }
         }
@@ -64,10 +61,10 @@ namespace ConsoleGame
             if (ticksSinceLastFire >= 0)
             {
                 ticksSinceLastFire++;
-                if (ticksSinceLastFire > 3)
+                if (ticksSinceLastFire > 1)
                 {
                     ticksSinceLastFire = -1;
-                    ObjectDisplay.CharMap[0, 1] = '^';
+                    ObjectDisplay.CharMaps[0][0, 1] = '^';
                 }
             }
         }

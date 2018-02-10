@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ConsoleGame.GameObjects;
 
 namespace ConsoleGame
@@ -8,14 +9,13 @@ namespace ConsoleGame
     {
         public int CurrentY { get; protected set; }
         public int CurrentX { get; protected set; }
-        protected ObjectDisplay ObjectDisplay { get; set; }
+        public ObjectDisplay ObjectDisplay { get; set; }
         protected int points = 0;
         protected bool isDead = false;
         protected bool canBeDestroyed = false;
         protected GameManager GameManager;
         protected List<string> CanDestroyList = new List<string>();
         protected List<ConsoleKey> KeyList = new List<ConsoleKey>();
-        private ObjectDisplay eraseObj = null;
         protected ulong SlowFactor { get; set; }
 
 
@@ -50,29 +50,14 @@ namespace ConsoleGame
 
         public virtual void Erase()
         {
-            if (eraseObj != null)
-            {
-                GameManager.DrawObject(eraseObj, CurrentY, CurrentX);
-            }
+            ObjectDisplay.Erase(CurrentY, CurrentX);
         }
 
         public virtual void Draw()
         {
-            if (eraseObj == null)
-            {
-                eraseObj = new ObjectDisplay
-                {
-                    BackgroundColor = GameManager.GameBackground,
-                    ForegroundColor = GameManager.GameForeground,
-                    CharMap = new char[ObjectDisplay.CharMap.GetLength(0), ObjectDisplay.CharMap.GetLength(1)]
-                };
-                for (var i = 0; i < eraseObj.CharMap.GetLength(0); i++)
-                    for (var j = 0; j < eraseObj.CharMap.GetLength(1); j++)
-                        eraseObj.CharMap[i, j] = ' ';
-            }
             if (!IsDead)
             {
-                GameManager.DrawObject(ObjectDisplay, CurrentY, CurrentX);
+                ObjectDisplay.Draw(CurrentY, CurrentX);
             }
         }
 

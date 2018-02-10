@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ConsoleGame
 { 
@@ -9,12 +10,10 @@ namespace ConsoleGame
             : base(gameManager, x, y)
         {
             points = 10;
-            ObjectDisplay = new ObjectDisplay
-            {
-                BackgroundColor = ConsoleColor.Cyan,
-                ForegroundColor = ConsoleColor.Cyan,
-                CharMap = new char[,] { { ' ' } }
-            };
+            var images = new List<char[,]> { new char[,] { { ' ' } } };
+            ObjectDisplay = new ObjectDisplay(images,
+                ConsoleColor.Cyan, ConsoleColor.Cyan,
+                gameManager.GameForeground, GameManager.GameBackground);
             Draw();
         }
 

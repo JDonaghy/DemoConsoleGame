@@ -14,14 +14,6 @@ namespace ConsoleGame
         private Random _rand = new Random();
         private int _score;
         private int _livesLeft;
-        
-        private static ObjectDisplay _blankChar = new ObjectDisplay
-        {
-            BackgroundColor = ConsoleColor.DarkBlue,
-            ForegroundColor = ConsoleColor.Cyan,
-            CharMap = new char[,] { { ' ' } }
-        };
-
 
         public bool GameOver { get; set; }
         public int NumRows { get => _numRows; set => _numRows = value; }
@@ -29,7 +21,6 @@ namespace ConsoleGame
         public ConsoleColor GameForeground => ConsoleColor.Cyan;
 
         public int NumColumns { get => _numColumns; set => _numColumns = value; }
-        public ObjectDisplay BlankChar => _blankChar;
         
         public List<IBaseObject> objList { get; set; }
         private List<IBaseObject> _newObjects = new List<IBaseObject>();
@@ -38,14 +29,12 @@ namespace ConsoleGame
 
         public GameManager(int numRows, int numColumns)
         {
-            Console.CursorVisible = false;
             objList = new List<IBaseObject>();
             NumColumns = numColumns;
             NumRows = numRows;
             charMap = new ObjectDisplay[numRows,numColumns];
             GameOver = false;
-            _initColors();
-            Console.Clear();
+            _clearConsole();
             _writeStatus();
         }
 
@@ -69,6 +58,9 @@ namespace ConsoleGame
                 case "GameOverObject":
                     listToAddTo.Add(new GameOverObject(this, x, y));
                     break;
+                case "ExplosionObject":
+                    _newObjects.Add( new ExplosionObject(this, x, y));
+                    break;
             }
         }
 
@@ -80,27 +72,14 @@ namespace ConsoleGame
 
         public IEnumerable<IBaseObject> GetObjectsAt(int x, int y)
         {
-            return objList.Where(obj => obj.CurrentX == x && obj.CurrentY == y);
+            return objList.Where(obj => 
+                obj.CurrentX - 1 < x && obj.CurrentX + 1 > x &&
+                obj.CurrentY - 1 < y && obj.CurrentY + 1 > y);
         }
 
-        public void DrawObject(ObjectDisplay value, int row, int col)
+        public void DrawObject(ObjectDisplay objectDisplay, int row, int col)
         {
-            try
-            {
-                Console.SetCursorPosition(col, row);
-                Console.ForegroundColor = value.ForegroundColor;
-                Console.BackgroundColor = value.BackgroundColor;
-                for (var i=0;i<value.CharMap.GetLength(0); i++)
-                    for (var j=0;j < value.CharMap.GetLength(1); j++)
-                {
-                    Console.Write(value.CharMap[i,j]);
-                }
-                _initColors();
-            }
-            catch (Exception e)
-            {
-                // Likely out of bounds. Ignore.
-            }
+            objectDisplay.Draw(row, col);
         }
 
         public bool ProcessKeys()
@@ -166,6 +145,10 @@ namespace ConsoleGame
                         {
                             _score += obj.Points;
                         }
+                        if (obj.CanBeDestroyed)
+                        {
+                            AddObject("ExplosionObject", obj.CurrentX, obj.CurrentY);
+                        }
                         obj.Dispose();
                     }
                     objList.RemoveAll(x => x.IsDead);
@@ -173,7 +156,6 @@ namespace ConsoleGame
                     _newObjects.Clear();
                     _proccessing = false;
                 }
-                _writeStatus();
             }
             else
             {
@@ -182,6 +164,7 @@ namespace ConsoleGame
                     InitGame();
                 }
             }
+            _writeStatus();
         }
 
         public void Beep(int freq)
@@ -192,7 +175,7 @@ namespace ConsoleGame
         public void EndGame()
         {
             _clearItems();
-            Console.Clear();
+            _clearConsole();
             _writeStatus();
             AddObject("GameOverObject", NumColumns / 2 - 8, 5);
             GameOver = true;
@@ -204,7 +187,6 @@ namespace ConsoleGame
             Console.BackgroundColor = ConsoleColor.DarkBlue;
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.Write(text);
-            _initColors();
         }
 
         private void _writeStatus()
@@ -225,10 +207,12 @@ namespace ConsoleGame
             objList.Clear();
         }
 
-        private void _initColors()
+        private void _clearConsole()
         {
-            Console.ForegroundColor = _blankChar.ForegroundColor;
-            Console.BackgroundColor = _blankChar.BackgroundColor;
+            Console.CursorVisible = false;
+            Console.ForegroundColor = GameForeground;
+            Console.BackgroundColor = GameBackground;
+            Console.Clear();
         }
     }
 }

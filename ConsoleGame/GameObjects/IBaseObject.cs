@@ -13,6 +13,8 @@ namespace ConsoleGame.GameObjects
         bool IsDead { get; set; }
         int CurrentX { get; }
         int CurrentY { get; }
+        int CurrentWidth { get; }
+        int CurrentHeight { get; }
 
         void Erase();
         void Update();

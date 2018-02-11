@@ -57,16 +57,17 @@ namespace ConsoleGame
             GameBackgroundColor = gameBg;
         }
 
-        public void Draw(int row, int col)
+        public Tuple<int,int> Draw(int row, int col)
         {
             Console.ForegroundColor = ForegroundColor;
             Console.BackgroundColor = BackgroundColor;
-            _drawImage(row, col, CharMaps[_charMapsIndex]);
+            var result = _drawImage(row, col, CharMaps[_charMapsIndex]);
             _charMapsIndex++;
             if (_charMapsIndex > CharMaps.Count - 1)
             {
                 _charMapsIndex = 0;
             }
+            return result;
         }
 
         public void Erase(int row, int col)
@@ -76,19 +77,21 @@ namespace ConsoleGame
             _drawImage(row, col, _eraseMaps[_charMapsIndex]);
         }
 
-        private void _drawImage(int row, int col, char[,] img)
+        private Tuple<int, int> _drawImage(int row, int col, char[,] img)
         {
-            if (row < 0 || col < 0)
-                return;
-
-            for (var i = 0; i < img.GetLength(0); i++)
+            var result = new Tuple<int, int>(img.GetLength(1), img.GetLength(0));
+            if (row >= 0 && col >= 0)
             {
-                Console.SetCursorPosition(col, row + i);
-                for (var j = 0; j < img.GetLength(1); j++)
+                for (var i = 0; i < img.GetLength(0); i++)
                 {
-                    Console.Write(img[i, j]);
+                    Console.SetCursorPosition(col, row + i);
+                    for (var j = 0; j < img.GetLength(1); j++)
+                    {
+                        Console.Write(img[i, j]);
+                    }
                 }
             }
+            return result;
         }
     }
 }

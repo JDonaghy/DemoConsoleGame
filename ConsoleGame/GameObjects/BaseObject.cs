@@ -9,6 +9,8 @@ namespace ConsoleGame
     {
         public int CurrentY { get; protected set; }
         public int CurrentX { get; protected set; }
+        public int CurrentWidth { get; protected set; }
+        public int CurrentHeight { get; protected set; }
         public ObjectDisplay ObjectDisplay { get; set; }
         protected int points = 0;
         protected bool isDead = false;
@@ -24,6 +26,8 @@ namespace ConsoleGame
             GameManager = gameManager;
             CurrentY = y;
             CurrentX = x;
+            CurrentWidth = 1;
+            CurrentHeight = 1;
             CanDestroyList.Add("CursorObject");
             SlowFactor = 10;
         }
@@ -57,7 +61,9 @@ namespace ConsoleGame
         {
             if (!IsDead)
             {
-                ObjectDisplay.Draw(CurrentY, CurrentX);
+                var dimensions = ObjectDisplay.Draw(CurrentY, CurrentX);
+                CurrentWidth = dimensions.Item1;
+                CurrentHeight = dimensions.Item2;
             }
         }
 
@@ -75,7 +81,8 @@ namespace ConsoleGame
 
         protected void CheckAlive()
         {
-            foreach (var otherObjAtMyPosition in GameManager.GetObjectsAt(CurrentX, CurrentY))
+            foreach (var otherObjAtMyPosition in GameManager.GetObjectsIntersecting(
+                CurrentX, CurrentY, CurrentWidth, CurrentHeight))
             {
                 var myType = GetType().ToString().Split('.')[1];
                 if (otherObjAtMyPosition.CanDestroy.Contains(myType))

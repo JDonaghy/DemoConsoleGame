@@ -9,10 +9,11 @@ namespace ConsoleGame
         public SineObject(GameManager gameManager, int x, int y)
             : base(gameManager, x, y)
         {
-            points = 10;
-            var images = new List<char[,]> { new char[,] { { ' ' } } };
+            points = 50;
+            var images = new List<char[,]> {
+                new char[,] { { '/', '-', '\\'}, { '\\', '_', '/' } }};
             ObjectDisplay = new ObjectDisplay(images,
-                ConsoleColor.Cyan, ConsoleColor.Cyan,
+                ConsoleColor.Cyan, ConsoleColor.DarkBlue,
                 gameManager.GameForeground, GameManager.GameBackground);
             Draw();
         }

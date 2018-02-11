@@ -9,10 +9,13 @@ namespace ConsoleGame
         public CosineObject(GameManager gameManager, int x, int y)
             : base(gameManager, x, y)
         {
-            points = 30;
-            var images = new List<char[,]> { new char[,] { { ' ' } } };
+            points = 100;
+            var images = new List<char[,]>
+            {
+                new char[,] { { 'o', '%', '0' } }
+            };
             ObjectDisplay = new ObjectDisplay(images,
-                ConsoleColor.Red, ConsoleColor.Red, 
+                ConsoleColor.Red, ConsoleColor.DarkBlue, 
                 gameManager.GameForeground, GameManager.GameBackground);
             Draw();
         }

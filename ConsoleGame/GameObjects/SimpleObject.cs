@@ -14,9 +14,9 @@ namespace ConsoleGame
         {
             points = 20;
             beepFreq = 800;
-            var images = new List<char[,]> { new char[,] { { ' ' } } };
+            var images = new List<char[,]> { new char[,] { { 'o' } } };
             ObjectDisplay = new ObjectDisplay(images,
-                ConsoleColor.Yellow, ConsoleColor.Yellow,
+                ConsoleColor.Yellow, ConsoleColor.DarkBlue,
                 gameManager.GameForeground, GameManager.GameBackground);
             Draw();
         }

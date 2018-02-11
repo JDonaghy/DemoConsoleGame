@@ -1,44 +1,28 @@
 ﻿using System.Threading;
-using ConsoleGame;
 using System.Linq;
+using ConsoleGame;
 
 public class Program
-{
-    static int numRows = 29;
-    static int numCols = 118;
-    static GameManager gameManager = null;
-
+{   
     public static void Main()
     {
-        _setup();
-        _mainLoop();
+        var gameManager =_setUpGame();
+        _mainLoop(gameManager);
     }
 
-    private static void _setup()
+    private static GameManager _setUpGame()
     {
-        gameManager = new GameManager(numRows, numCols);
+        var gameManager = new GameManager();
         gameManager.InitGame();
+        return gameManager;
     }
 
-    private static void _mainLoop()
+    private static void _mainLoop(GameManager gameManager)
     {
         ulong counter = 0;
         while (gameManager.ProcessKeys())
         {
             gameManager.ProcessObjects(counter);
-            if (counter % 10 == 0)
-            {
-                if (counter % 100 == 0)
-                {
-                    var destroyableObjectCount = gameManager.objList.Where(
-                        obj => obj.CanBeDestroyed).ToList().Count;
-
-                    if (!gameManager.GameOver && destroyableObjectCount < 5)
-                    {
-                        gameManager.AddRandomObject();
-                    }
-                }
-            }
             Thread.Sleep(10);
             counter++;
         }

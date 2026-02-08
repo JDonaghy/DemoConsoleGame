@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace ConsoleGame
 { 
 
-    public class SineObject : DestoyableObject
+    public class SineObject : DestroyableObject
     {
         public SineObject(GameManager gameManager, int x, int y)
             : base(gameManager, x, y)

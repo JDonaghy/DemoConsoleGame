@@ -1,8 +1,8 @@
 ﻿namespace ConsoleGame
 {
-    public class DestoyableObject : BaseObject
+    public class DestroyableObject : BaseObject
     {
-        public DestoyableObject(GameManager gameManager, int x, int y)
+        public DestroyableObject(GameManager gameManager, int x, int y)
             : base(gameManager, x, y)
         {
             canBeDestroyed = true;

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace ConsoleGame
 {
-    public class CursorObject : DestoyableObject
+    public class CursorObject : DestroyableObject
     {
         private List<ConsoleKey> _rightKeys = new List<ConsoleKey>()
         { ConsoleKey.D, ConsoleKey.RightArrow };

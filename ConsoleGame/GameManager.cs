@@ -78,16 +78,16 @@ namespace ConsoleGame
         public IEnumerable<IBaseObject> GetObjectsIntersecting(int x, int y, int width, int height)
         {
             var result = new List<IBaseObject>();
+            Rect areaToCheck = new Rect()
+            {
+                x = x,
+                y = y, 
+                width = width,
+                height = height
+            };
             foreach (var obj in objList)
             {
-                Rect r1 = new Rect()
-                {
-                    x = x,
-                    y = y, width = 
-                    width,
-                    height = height
-                };
-                Rect r2 = new Rect()
+                Rect objRectangle = new Rect()
                 {
                     x = obj.CurrentX,
                     y = obj.CurrentY,
@@ -95,7 +95,7 @@ namespace ConsoleGame
                     height = obj.CurrentHeight
                 };
                 
-                if (_rectanglesOverlap(r1, r2))
+                if (_rectanglesOverlap(areaToCheck, objRectangle))
                 {
                     result.Add(obj);
                 }
@@ -194,7 +194,7 @@ namespace ConsoleGame
 
         public void Beep(int freq)
         {
-            Console.Beep(freq, 100);
+            //Console.Beep(freq, 100);
         }
 
         public void EndGame()

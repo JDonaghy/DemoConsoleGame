@@ -1,0 +1,38 @@
+{
+  "adapters": {
+    "netcoredbg-debuglog": {
+      "attach": {
+        "pidProperty": "processId",
+        "pidSelect": "ask"
+      },
+      "command": [
+        "${gadgetDir}/netcoredbg/netcoredbg",
+        "--interpreter=vscode",
+        "--engineLogging=${workspaceRoot}/netcoredbg.engine.log",
+        "--log=${workspaceRoot}/netcoredbg.log"
+      ],
+      "configuration": {
+        "cwd": "${workspaceRoot}"
+      },
+      "name": "netcoredbg"
+    }
+  },
+  "configurations": {
+    "launch - netcoredbg": {
+      "adapter": "netcoredbg",
+      "configuration": {
+        "request": "launch",
+        "program": "${workspaceRoot}/bin/Debug/netcoreapp6.0/ConsoleGame.dll",
+        "args": [],
+        "stopAtEntry": false
+      },
+      "breakpoints": {
+        "exception": {
+          "user-unhandled": "",
+          "all": ""
+        }
+      }
+    }
+  }
+}
+

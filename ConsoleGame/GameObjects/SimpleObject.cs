@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ConsoleGame
 {
-    public class SimpleObject : DestoyableObject
+    public class SimpleObject : DestroyableObject
     {
         private int _xChange = 1;
         private int _yChange = 1;

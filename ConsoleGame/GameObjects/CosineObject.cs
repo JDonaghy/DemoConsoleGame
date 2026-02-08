@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace ConsoleGame
 {
 
-    public class CosineObject : DestoyableObject
+    public class CosineObject : DestroyableObject
     {
         public CosineObject(GameManager gameManager, int x, int y)
             : base(gameManager, x, y)

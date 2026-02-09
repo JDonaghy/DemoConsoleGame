@@ -1,97 +1,42 @@
-﻿using System;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 
 namespace ConsoleGame
 {
     public class ObjectDisplay
     {
-        private int _charMapsIndex=0;
-        private List<char[,]> _eraseMaps = new List<char[,]>();
-        private List<char[,]> _charMaps;
-        public List<char[,]> CharMaps
+        private int _textureIndex = 0;
+        public List<Texture2D> Textures { get; set; }
+        public Color Color { get; set; }
+
+        public int TextureIndex
         {
-            get
+            get => _textureIndex;
+            set => _textureIndex = value % Textures.Count;
+        }
+        public bool AutoAnimate { get; set; } = true;
+
+        public ObjectDisplay(List<Texture2D> textures, Color color)
+        {
+            Textures = textures;
+            Color = color;
+        }
+
+        public Vector2 Draw(SpriteBatch spriteBatch, Vector2 position, float scale)
+        {
+            var tex = Textures[_textureIndex];
+            spriteBatch.Draw(tex, position, null, Color, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+
+            if (AutoAnimate)
             {
-                return _charMaps;
-            }
-            set
-            {
-                _charMaps = value;
-                _eraseMaps.Clear();
-                foreach (var charMap in _charMaps)
+                _textureIndex++;
+                if (_textureIndex > Textures.Count - 1)
                 {
-                    var eraseMap = new char[charMap.GetLength(0), charMap.GetLength(1)];
-                    for (var i = 0; i < eraseMap.GetLength(0); i++)
-                        for (var j = 0; j < eraseMap.GetLength(1); j++)
-                            eraseMap[i, j] = ' ';
-                    _eraseMaps.Add(eraseMap);
-                }
-
-            }
-        }
-        public char[,] CurrentCharMap
-        {
-            get
-            {
-                return _charMaps[_charMapsIndex];
-            }
-        }
-
-        public ConsoleColor ForegroundColor { get; set; }
-        public ConsoleColor BackgroundColor { get; set; }
-        public ConsoleColor GameForegroundColor { get; set; }
-        public ConsoleColor GameBackgroundColor { get; set; }
-
-        private ObjectDisplay()
-        {
-        }
-
-        public ObjectDisplay(
-            List<char[,]> charMaps, ConsoleColor fg, ConsoleColor bg, 
-            ConsoleColor gameFg, ConsoleColor gameBg)
-        {
-            CharMaps = charMaps;
-            ForegroundColor = fg;
-            BackgroundColor = bg;
-            GameForegroundColor = gameFg;
-            GameBackgroundColor = gameBg;
-        }
-
-        public Tuple<int,int> Draw(int row, int col)
-        {
-            Console.ForegroundColor = ForegroundColor;
-            Console.BackgroundColor = BackgroundColor;
-            var result = _drawImage(row, col, CharMaps[_charMapsIndex]);
-            _charMapsIndex++;
-            if (_charMapsIndex > CharMaps.Count - 1)
-            {
-                _charMapsIndex = 0;
-            }
-            return result;
-        }
-
-        public void Erase(int row, int col)
-        {
-            Console.ForegroundColor = GameForegroundColor;
-            Console.BackgroundColor = GameBackgroundColor;
-            _drawImage(row, col, _eraseMaps[_charMapsIndex]);
-        }
-
-        private Tuple<int, int> _drawImage(int row, int col, char[,] img)
-        {
-            var result = new Tuple<int, int>(img.GetLength(1), img.GetLength(0));
-            if (row >= 0 && col >= 0)
-            {
-                for (var i = 0; i < img.GetLength(0); i++)
-                {
-                    Console.SetCursorPosition(col, row + i);
-                    for (var j = 0; j < img.GetLength(1); j++)
-                    {
-                        Console.Write(img[i, j]);
-                    }
+                    _textureIndex = 0;
                 }
             }
-            return result;
+            return new Vector2(tex.Width * scale, tex.Height * scale);
         }
     }
 }

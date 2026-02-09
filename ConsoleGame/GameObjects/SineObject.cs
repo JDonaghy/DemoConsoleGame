@@ -1,5 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace ConsoleGame
 { 
@@ -10,12 +12,8 @@ namespace ConsoleGame
             : base(gameManager, x, y)
         {
             points = 50;
-            var images = new List<char[,]> {
-                new char[,] { { '/', '-', '\\'}, { '\\', '_', '/' } }};
-            ObjectDisplay = new ObjectDisplay(images,
-                ConsoleColor.Cyan, ConsoleColor.DarkBlue,
-                gameManager.GameForeground, GameManager.GameBackground);
-            Draw();
+            var textures = new List<Texture2D> { GameManager.Textures["sine"] };
+            ObjectDisplay = new ObjectDisplay(textures, Color.Cyan);
         }
 
         public override void Update()

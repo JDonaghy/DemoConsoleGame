@@ -1,6 +1,7 @@
-﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ConsoleGame.GameObjects;
 
 namespace ConsoleGame
 {
@@ -10,31 +11,18 @@ namespace ConsoleGame
         public ExplosionObject(GameManager gameManager, int x, int y)
             : base(gameManager, x, y)
         {
-            var images = new List<char[,]>
-            {
-                new char[,] 
-                { 
-                    { '*', ' ', '*' } , 
-                    { ' ', ' ', ' ' } , 
-                    { '*', ' ', '*' }
-                },
-                new char[,]
-                {
-                    { ' ', '.', ' ' } ,
-                    { '.', ' ', '.' } ,
-                    { ' ', '.', ' ' }
-                }
+            var textures = new List<Texture2D> 
+            { 
+                GameManager.Textures["explosion"],
+                GameManager.Textures["explosion2"]
             };
-            ObjectDisplay = new ObjectDisplay(images,
-                ConsoleColor.Yellow, ConsoleColor.DarkBlue,
-                gameManager.GameForeground, GameManager.GameBackground);
-            Draw();
+            ObjectDisplay = new ObjectDisplay(textures, Color.Yellow);
         }
 
         public override void Update()
         {
             _ticks++;
-            if (_ticks > 1)
+            if (_ticks > 4) // Slower explosion
                 isDead = true;
         }
     }

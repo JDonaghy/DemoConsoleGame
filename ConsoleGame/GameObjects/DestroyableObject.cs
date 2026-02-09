@@ -1,4 +1,6 @@
-﻿namespace ConsoleGame
+using ConsoleGame.GameObjects;
+
+namespace ConsoleGame
 {
     public class DestroyableObject : BaseObject
     {

@@ -1,5 +1,6 @@
-﻿using System;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace ConsoleGame
 {
@@ -14,25 +15,23 @@ namespace ConsoleGame
         {
             points = 20;
             beepFreq = 800;
-            var images = new List<char[,]> { new char[,] { { 'o' } } };
-            ObjectDisplay = new ObjectDisplay(images,
-                ConsoleColor.Yellow, ConsoleColor.DarkBlue,
-                gameManager.GameForeground, GameManager.GameBackground);
-            Draw();
+            var textures = new List<Texture2D> { GameManager.Textures["simple"] };
+            ObjectDisplay = new ObjectDisplay(textures, Color.Yellow);
         }
 
         public override void Update()
         {
-            var height = ObjectDisplay.CurrentCharMap.GetLength(0);
-            var width = ObjectDisplay.CurrentCharMap.GetLength(1);
-            if ((_xChange > 0 && CurrentX + _xChange * width > GameManager.NumColumns) ||
+            int height = CurrentHeight;
+            int width = CurrentWidth;
+
+            if ((_xChange > 0 && CurrentX + _xChange + width > GameManager.NumColumns) ||
                 (_xChange < 0 && CurrentX + _xChange < 0))
             {
                 _xChange *= -1;
                 if (beepFreq > 0)
                     GameManager.Beep(beepFreq);
             }
-            if ((_yChange > 0 && CurrentY + _yChange * height > GameManager.NumRows) ||
+            if ((_yChange > 0 && CurrentY + _yChange + height > GameManager.NumRows) ||
                 (_yChange < 0 && CurrentY + _yChange < 0))
             {
                 _yChange *= -1;

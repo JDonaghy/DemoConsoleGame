@@ -1,5 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace ConsoleGame.GameObjects
 {
@@ -9,17 +12,16 @@ namespace ConsoleGame.GameObjects
         List<string> CanDestroy { get; }
         bool CanBeDestroyed { get; }
         int Points { get; }
-        List<ConsoleKey> RegisteredKeys { get; }
+        List<Keys> RegisteredKeys { get; }
         bool IsDead { get; set; }
         int CurrentX { get; }
         int CurrentY { get; }
         int CurrentWidth { get; }
         int CurrentHeight { get; }
 
-        void Erase();
         void Update();
-        void Draw();
-        void Process(ulong counter);
-        void ProcessKey(ConsoleKeyInfo keyInfo);
+        void Draw(SpriteBatch spriteBatch, float scale);
+        void Process(GameTime gameTime);
+        void ProcessInput(KeyboardState keyState);
     }
 }

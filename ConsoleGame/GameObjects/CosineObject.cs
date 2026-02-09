@@ -1,23 +1,18 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace ConsoleGame
 {
-
     public class CosineObject : DestroyableObject
     {
         public CosineObject(GameManager gameManager, int x, int y)
             : base(gameManager, x, y)
         {
             points = 100;
-            var images = new List<char[,]>
-            {
-                new char[,] { { 'o', '%', '0' } }
-            };
-            ObjectDisplay = new ObjectDisplay(images,
-                ConsoleColor.Red, ConsoleColor.DarkBlue, 
-                gameManager.GameForeground, GameManager.GameBackground);
-            Draw();
+            var textures = new List<Texture2D> { GameManager.Textures["cosine"] };
+            ObjectDisplay = new ObjectDisplay(textures, Color.Red);
         }
 
         public override void Update()

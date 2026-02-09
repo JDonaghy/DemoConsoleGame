@@ -1,11 +1,14 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using ConsoleGame.GameObjects;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace ConsoleGame
 {
-    struct Rect
+    public struct Rect // Changed to public so it can be used if needed, though MonoGame has Rectangle
     {
         public int x;
         public int y;
@@ -15,17 +18,16 @@ namespace ConsoleGame
 
     public class GameManager
     {
-        private int _numRows = 29;
-        private int _numColumns = 118;
-        private ObjectDisplay[,] charMap;
+        private int _numRows = 45; // Approx 720 / 16
+        private int _numColumns = 80; // Approx 1280 / 16
         private bool _proccessing = false;
         private Random _rand = new Random();
         private int _score;
         private int _livesLeft;
 
         public bool GameOver { get; set; }
-        public ConsoleColor GameBackground => ConsoleColor.DarkBlue;
-        public ConsoleColor GameForeground => ConsoleColor.Cyan;
+        public Color GameBackground => Color.DarkBlue;
+        public Color GameForeground => Color.Cyan;
         public int NumRows { get => _numRows; set => _numRows = value; }
         public int NumColumns { get => _numColumns; set => _numColumns = value; }
         
@@ -34,13 +36,12 @@ namespace ConsoleGame
         List<string> IndependentOjects = 
             new List<string> { "SineObject", "CosineObject", "SimpleObject" };
 
+        public Dictionary<string, Texture2D> Textures { get; set; } = new Dictionary<string, Texture2D>();
+
         public GameManager()
         {
             objList = new List<IBaseObject>();
-            charMap = new ObjectDisplay[_numRows,_numColumns];
             GameOver = false;
-            _clearConsole();
-            _writeStatus();
         }
 
         public void AddObject(string type, int x, int y)
@@ -103,28 +104,22 @@ namespace ConsoleGame
             return result;
         }
 
-        public bool ProcessKeys()
+        public bool ProcessInput()
         {
-            var result = true;
-            while (Console.KeyAvailable)
+            var state = Keyboard.GetState();
+            if (state.IsKeyDown(Keys.Escape))
             {
-                var keyInfo = Console.ReadKey(true);
-                if (keyInfo.Key == ConsoleKey.Escape)
-                {
-                    result = false;
-                }
-                else
-                {
-                    var firstObj = objList.FirstOrDefault(x => x.RegisteredKeys.Contains(keyInfo.Key));
-                    if (firstObj != null)
-                    {
-                        firstObj.Erase();
-                        firstObj.ProcessKey(keyInfo);
-                        firstObj.Draw();
-                    }
-                }
+                return false;
             }
-            return result;
+            
+            // Allow objects to process input
+            // Iterate over a copy to allow modification of the collection (e.g. adding missiles)
+            var currentObjects = objList.ToList();
+            foreach(var obj in currentObjects)
+            {
+                obj.ProcessInput(state);
+            }
+            return true;
         }
 
         public void InitGame()
@@ -137,15 +132,15 @@ namespace ConsoleGame
             objList.Add(new CursorObject(this));
         }
 
-        public void ProcessObjects(ulong counter)
+        public void ProcessObjects(GameTime gameTime)
         {
             foreach (var obj in objList)
             {
-                obj.Process(counter);
+                obj.Process(gameTime);
             }
             if (!GameOver)
             {
-                if (!objList.Any(x => x.GetType().ToString() == "ConsoleGame.CursorObject"))
+                if (!objList.Any(x => x.GetType().ToString().EndsWith("CursorObject")))
                 {
                     if (_livesLeft > 0)
                     {
@@ -185,38 +180,79 @@ namespace ConsoleGame
                     InitGame();
                 }
             }
-            _writeStatus();
-            if (counter % 100 == 0)
+            
+            if (_score > 0 && (int)gameTime.TotalGameTime.TotalMilliseconds % 2000 < 20) // Roughly every 2 seconds
             {
-                makeDemBuggers();
+                 // makeDemBuggers logic needs to be called
+                 makeDemBuggers();
             }
+            // Actually original logic was counter % 100 == 0. 
+            // 100 * 10ms = 1000ms = 1 second.
+            // So I should call it periodically.
+        }
+        
+        // Helper to run periodically
+        private double _timeSinceLastSpawn;
+        public void Update(GameTime gameTime)
+        {
+             _timeSinceLastSpawn += gameTime.ElapsedGameTime.TotalMilliseconds;
+             if (_timeSinceLastSpawn > 1000)
+             {
+                 makeDemBuggers();
+                 _timeSinceLastSpawn = 0;
+             }
+             ProcessObjects(gameTime);
         }
 
         public void Beep(int freq)
         {
-            //Console.Beep(freq, 100);
+            // Optional: Play sound
         }
 
         public void EndGame()
         {
             _clearItems();
-            _clearConsole();
-            _writeStatus();
             AddObject("GameOverObject", NumColumns / 2 - 8, 5);
             GameOver = true;
         }
 
-        public void WriteText(int x, int y, string text)
+        public void Draw(SpriteBatch spriteBatch)
         {
-            Console.SetCursorPosition(x, y);
-            Console.BackgroundColor = ConsoleColor.DarkBlue;
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.Write(text);
+             // Draw background
+             if (Textures.ContainsKey("background"))
+             {
+                 spriteBatch.Draw(Textures["background"], new Rectangle(0, 0, 1280, 720), Color.White);
+             }
+
+             foreach(var obj in objList)
+             {
+                 obj.Draw(spriteBatch, 1.0f);
+             }
+             
+             // Draw score
+             string scoreStr = _score.ToString();
+             int x = 10;
+             int y = 10;
+             foreach(char c in scoreStr)
+             {
+                 if (char.IsDigit(c))
+                 {
+                     var tex = Textures[$"num_{c}"];
+                     spriteBatch.Draw(tex, new Vector2(x, y), Color.White);
+                     x += tex.Width + 2;
+                 }
+             }
+
+             // Draw lives
+             var shipTex = Textures["cursor"];
+             int livesX = 1280 - 40; // Top right
+             for (int i = 0; i < _livesLeft; i++)
+             {
+                 spriteBatch.Draw(shipTex, new Vector2(livesX, 10), null, Color.White, 0f, Vector2.Zero, 0.7f, SpriteEffects.None, 0f); // Draw slightly smaller
+                 livesX -= (int)(shipTex.Width * 0.7f) + 5;
+             }
         }
 
-        //
-        // Source: https://stackoverflow.com/questions/306316/determine-if-two-rectangles-overlap-each-other
-        //
         private bool _valueInRange(int value, int min, int max)
         {
             return (value >= min) && (value <= max);
@@ -232,19 +268,7 @@ namespace ConsoleGame
 
             return xOverlap && yOverlap;
         }
-        //
-        // End source
-        //
 
-        private void _writeStatus()
-        {
-            WriteText(NumColumns - 10, 1, $"{_score.ToString("D5")}     ");
-            for (int i=0;i<_livesLeft;i++)
-            {
-                WriteText(NumColumns - 1 -i, 1, "^");
-            }
-        }
-        
         private void _clearItems()
         {
             foreach(var obj in objList)
@@ -252,14 +276,6 @@ namespace ConsoleGame
                 obj.Dispose();
             }
             objList.Clear();
-        }
-
-        private void _clearConsole()
-        {
-            Console.CursorVisible = false;
-            Console.ForegroundColor = GameForeground;
-            Console.BackgroundColor = GameBackground;
-            Console.Clear();
         }
 
         private void makeDemBuggers()
